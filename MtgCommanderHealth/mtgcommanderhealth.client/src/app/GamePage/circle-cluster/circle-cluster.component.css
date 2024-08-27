@@ -1,0 +1,9 @@
+.container{
+    position: relative;
+}
+.floating{
+    position: absolute;
+    top: 18%;/*a little janky, this only centers because of the size being 55,*/
+    left: 18%;/* should probably find a way to center at 50% by using middle of element instead of top left*/
+    z-index: 10;
+}

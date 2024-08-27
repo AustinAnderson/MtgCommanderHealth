@@ -1,0 +1,46 @@
+<style>
+  .container{
+      position: relative;
+  }
+  .floating{
+      position: absolute;
+      z-index: 10;
+  }
+  .jankCircleAdjust{
+      top: 44%;
+      left: 45%;
+  }
+  .layoutHolder{
+    display: flex;
+    flex-wrap:wrap;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+  .modeBox{
+      display: flex;
+      width: 28%;
+  }
+</style>
+<div style="height: 100%; width: 100%; display: flex">
+  <div class="container layoutHolder">
+    <div class="floating modeBox">
+      <mode-select></mode-select>
+    </div>
+    <ng-container *ngFor="let data of userMap; index as i">
+      <div class="floating jankCircleAdjust" style="transform-origin: center; transform: rotate({{-1*data.deg}}deg) translateX({{300*ellipseScale(data.deg)}}%) rotate({{data.deg}}deg) scale(110%)">
+        <circle-cluster
+            [parentRotation]="data.deg"
+            [health]="data.mainUserHealth"
+            [name]="data.mainUser"
+            [commander-data]="data.commanderList"
+            [commanderDeathCount]="data.mainCommanderDeathCount"
+            [arrowColor]="data.arrowData.arrowColor.color"
+            [fromArrowVisible]="data.arrowData.fromArrow"
+            [toArrowVisible]="data.arrowData.toArrow"
+        ></circle-cluster>
+      </div>
+    </ng-container>
+  </div>
+</div>

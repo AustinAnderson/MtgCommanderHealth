@@ -1,0 +1,15 @@
+<svg [attr.width]="pxSize" [attr.height]="pxSize" style="filter: drop-shadow(10px 10px 10px 10px)">
+  <filter id="shadow">
+    <feDropShadow dx="0" dy="0" attr.stdDeviation="{{(3*pxSize/100)}}"></feDropShadow>
+  </filter>
+  <filter id="textShadow">
+    <feDropShadow dx="0" dy="0" stdDeviation="0" flood-color="black"></feDropShadow>
+  </filter>
+  <circle cy="50%" cx="50%" r="44%" [attr.fill]="fill" style="filter:url(#shadow)" />
+  <text text-anchor="middle" x="50%" y="40%" fill="#ffffff"
+        attr.font-size="{{pxSize*1.05}}%"
+        style="filter:url(#shadow)">{{name}}</text>
+  <text text-anchor="middle" x="50%" y="65%" fill="#ffffff"
+        attr.font-size="{{pxSize*1.5}}%"
+        style="filter:url(#shadow)">{{health}}</text>
+</svg>

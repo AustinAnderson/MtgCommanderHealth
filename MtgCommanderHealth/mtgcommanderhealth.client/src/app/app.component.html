@@ -1,0 +1,73 @@
+<style>
+  :host {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .navBar {
+    display: flex;
+    flex-direction: row;
+    background-color: #1F1F1F;
+    align-items: center;
+  }
+
+  .navItem {
+    margin: 1px; /*1 px margin that's removed on active to replace with border*/
+    display: flex;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: antiquewhite;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .unselected {
+    height: 60%;
+  }
+
+  .selected {
+    height: 60%;
+    background-color: #2E2E2E;
+    box-shadow: 0 1em 2em 0 rgba(0,0,0,.8);
+  }
+
+  .unselected:hover {
+    box-shadow: 0 1em 2em 0 rgba(0,0,0,.2);
+    border-radius: 5%;
+    background-color: #4D4D4D;
+  }
+
+  .unselected:active {
+    margin: 0px;
+    border: 1px inset;
+    box-shadow: 0 1em 2em 0 rgba(0,0,0,.2);
+    border-radius: 5%;
+    background-color: #4D4D4D;
+  }
+
+  .content {
+    margin-top: .5%;
+    height: 99.5%;
+  }
+</style>
+<div style="display: flex; flex-direction: column; height:100%">
+  <div class="navBar">
+    <div class="navItem unselected" (click)="toggleSound()">
+      <sound-player></sound-player>
+    </div>
+    <div class="navItem" [class]="gamePage.getClass()" (click)="this.gamePage.select()">
+      <p>Game</p>
+    </div>
+    <div class="navItem" [class]="registerPage.getClass()" (click)="this.registerPage.select()">
+      <p>Register</p>
+    </div>
+  </div>
+  <div class="content" [hidden]="!registerPage.selected">
+    <p>register tag and commander page goes here</p>
+  </div>
+  <div class="content" [hidden]="!gamePage.selected">
+    <game-page></game-page>
+  </div>
+</div>

@@ -1,0 +1,60 @@
+<style>
+  .commanderDeathBox{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    box-shadow: 0 1em 2em 0 rgba(0,0,0,.2);
+    border-radius: 5%;
+    background-color: #EEE;
+  }
+  .title{
+    display: flex;
+    height: 25%;
+  }
+  .countDisplay{
+    width: 95%;
+    height: 45%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1em 2em 0 rgba(0,0,0,.2) inset;
+    border-radius: 5%;
+    font-weight: 700;
+  }
+  .controlsContainer{
+    width: 100%;
+    height: 30%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+  .controlDiv{
+    display: flex;
+    justify-content: center;
+    width: 50%;
+    border: 1px inset;
+  }
+  .controlDiv:hover{
+    background-color: #CCC;
+  }
+  .controlDiv:active{
+    background-color: #AAA;
+  }
+</style>
+<div class="commanderDeathBox">
+  <div class="title">Commander Deaths</div>
+  <div class="countDisplay">
+    <span>{{count}}</span>
+  </div>
+  <div class="controlsContainer">
+    <div class="controlDiv" (click)="undo()">
+      undo
+    </div>
+    <div class="controlDiv" (click)="increment()">
+      +1
+    </div>
+  </div>
+</div>

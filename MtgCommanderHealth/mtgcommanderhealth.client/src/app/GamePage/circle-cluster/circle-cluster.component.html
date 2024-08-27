@@ -1,0 +1,69 @@
+<style>
+    .reactToMouseDown:active{
+        filter: brightness(50%);
+    }
+  .toolTipContainer{
+    position: relative;
+    display: inline-block;
+  }
+  .deathTracker{
+    display: flex;
+  }
+  .boxAbove{
+    top: -50%;
+  }
+  .boxBelow{
+    top: 80%;
+  }
+  .toolTip{
+    visibility: hidden;
+    opacity: .2;
+    position: absolute;
+    left: 80%;
+    z-index: 1;
+  }
+  .toolTipContainer:hover .toolTip{
+      visibility: visible;
+  }
+  .toolTip:hover{
+      opacity: 1;
+  }
+</style>
+
+<div class="container">
+  <div [style.fill]="arrowColor" [hidden]="!toArrowVisible" class="floating" style="transform-origin: center; transform: scale(80%) translateY(-15%) translateX(-10%) rotate({{-1*parentRotation}}deg) translateX(-160%); z-index: -2">
+    <svg width="100%" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 600 600" xml:space="preserve">
+        <path style="transform: translateY(10%); stroke: rgb(0,0,0); stroke-width: 2;"
+              d="M 54 174 L 54.00000000000001 311 L 351.00168349691216 311 L 351.00168349691216 443.0038005885739 L 551.0881873363483 242.9172967491378 L 349.4036746543028 41.2327840670923 L 349.4036746543028 175.00952462033823 L 54.66776396253539 175.00952462033825"
+              vector-effect="non-scaling-stroke" 
+              stroke-linecap="round" />
+      </svg>
+  </div>
+  <div [style.fill]="arrowColor" [hidden]="!fromArrowVisible" class="floating" style="transform-origin: center; transform: scale(80%) translateY(-15%) translateX(-10%) rotate({{-1*parentRotation}}deg) translateX(-160%) rotate(180deg); z-index: -2">
+    <svg width="100%" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 600 600" xml:space="preserve">
+        <path style="transform: translateY(10%); stroke: rgb(0,0,0); stroke-width: 2;"
+              d="M 54 174 L 54.00000000000001 311 L 351.00168349691216 311 L 351.00168349691216 443.0038005885739 L 551.0881873363483 242.9172967491378 L 349.4036746543028 41.2327840670923 L 349.4036746543028 175.00952462033823 L 54.66776396253539 175.00952462033825"
+              vector-effect="non-scaling-stroke" 
+              stroke-linecap="round" />
+      </svg>
+  </div>
+  <div>
+    <div class="toolTipContainer">
+      <health-circle [pxSize]=100 [fill]="color" [name]="name" [health]="health" class="reactToMouseDown"
+                   (click)="emitCircleClicked()" (mouseenter)="emitCircleMousedEnter()" (mouseleave)="emitCircleMousedLeave()"
+                   
+      >
+      </health-circle>
+      <div class="toolTip boxAbove" id="toolTipBox">
+        <commander-death-tracker class="deathTracker" [name]="name" [count]="commanderDeathCount"></commander-death-tracker>
+      </div>
+    </div>
+    <ng-container *ngFor="let item of bindingData; index as i">
+      <div class="floating" style="transform-origin: center; transform: translateX(15%) translateY(12%) rotate({{-1*item.rotationDeg}}deg) translateX(110%) rotate({{item.rotationDeg}}deg); z-index:-1" >
+        <health-circle [pxSize]=50 [fill]="item.color" [name]="item.name" [health]="item.health"></health-circle>
+      </div>
+    </ng-container>
+  </div>
+</div>
