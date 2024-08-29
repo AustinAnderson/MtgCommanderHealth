@@ -3,19 +3,18 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    height: 100%;
   }
 </style>
 <div class="container" id="holder">
   <button onclick="(function makeImage() {
     let holder = document.getElementById('holder');
-    let existing = document.getElementById('theImg');
+    let existing = document.getElementById('theImg2');
     if (existing) {
       holder.removeChild(existing);
     }
     let el = document.createElement('img');
-    el.id = 'theImg';
+    el.id = 'theImg2';
     el.src = 'userFiles/stored/test.bmp';
     holder.appendChild(el);
-  })()">add img</button>
+  })()">add img test</button>
 </div>

@@ -17,19 +17,26 @@ builder.Services.AddSingleton<IRootedFileProvider>(fileStorage);
 var app = builder.Build();
 
 app.UseDefaultFiles();
+#if DEBUG
+var currentPath=new FileInfo(builder.Environment.ContentRootPath);
+var clientName = "mtgcommanderhealth.client";
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider( 
+        Path.Combine(currentPath.Directory!.FullName,clientName,"dist",clientName)
+    )
+});
+#else
 app.UseStaticFiles();
+#endif
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = fileStorage,
     RequestPath = "/userFiles"
 });
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseAuthorization();
 
