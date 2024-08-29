@@ -25,35 +25,25 @@ namespace MtgCommanderHealth.Server.Persistence
     }
     public class FileGameStateRepository : IGameStateRepository
     {
-        const string AppDataKey = "AppData";
-        public FileGameStateRepository(ILogger<FileGameStateRepository> logger)
+        public FileGameStateRepository(ILogger<FileGameStateRepository> logger, IRootedFileProvider fileStorage)
         {
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AppDataKey)))
-            {
-                throw new DirectoryNotFoundException($"unable to find %{AppDataKey}%");
-            }
-            var folderPath = Environment.ExpandEnvironmentVariables(
-                $"%{AppDataKey}%{Path.PathSeparator}MtgCommanderHealth"
-            );
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-            savePath = Path.Combine(folderPath, "saveData.json");
+            savePath = Path.Combine(fileStorage.Root, "saveData.json");
             if (!File.Exists(savePath))
             {
                 File.WriteAllText(savePath, "{}");
             }
 
             this.logger = logger;
+            this.fileStorage = fileStorage;
         }
         private readonly string savePath;
         //could do reader-writer lock, but because it's file persist it's
         //assumed to be running locally anyway, so don't need
-        private readonly SemaphoreSlim _nameLock = new SemaphoreSlim(1);
-        private readonly SemaphoreSlim _cmdLock = new SemaphoreSlim(1);
-        private readonly SemaphoreSlim _soundLock = new SemaphoreSlim(1);
+        private static readonly SemaphoreSlim _nameLock = new SemaphoreSlim(1);
+        private static readonly SemaphoreSlim _cmdLock = new SemaphoreSlim(1);
+        private static readonly SemaphoreSlim _soundLock = new SemaphoreSlim(1);
         private readonly ILogger<FileGameStateRepository> logger;
+        private readonly IRootedFileProvider fileStorage;
 
         public class SyncedToken : IDisposable
         {

@@ -6,5 +6,16 @@
     height: 100%;
   }
 </style>
-<div class="container">
+<div class="container" id="holder">
+  <button onclick="(function makeImage() {
+    let holder = document.getElementById('holder');
+    let existing = document.getElementById('theImg');
+    if (existing) {
+      holder.removeChild(existing);
+    }
+    let el = document.createElement('img');
+    el.id = 'theImg';
+    el.src = 'userFiles/stored/test.bmp';
+    holder.appendChild(el);
+  })()">add img</button>
 </div>

@@ -13,6 +13,7 @@ import { EventLogComponent } from './GamePage/event-log/event-log.component';
 import { CommanderDeathTrackerComponent } from './GamePage/commander-death-tracker/commander-death-tracker.component';
 import { GamePageComponent } from './GamePage/game-page/game-page.component';
 import { FormsModule } from '@angular/forms';
+import { RegisterPageComponent } from './RegisterPage/register-page/register-page.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { FormsModule } from '@angular/forms';
     SoundPlayerComponent,
     EventLogComponent,
     CommanderDeathTrackerComponent,
-    GamePageComponent
+    GamePageComponent,
+    RegisterPageComponent
   ],
   imports: [
     BrowserModule,
