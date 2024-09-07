@@ -1,5 +1,5 @@
 import { AudioCue } from "../events/AudioCue";
-import { AttackEvent, Events, HealEvent, StealCommanderEvent } from "../events/Events";
+import { AttackEvent, Events, HealEvent, ReRenderRequestedEvent, StealCommanderEvent } from "../events/Events";
 import { UserInputValues } from "../events/UserInputValues";
 import { SharedArrowColor } from "../health-layout/health-layout.component";
 export const ToOrFrom = { to: 'to', from: 'from' } as const;
@@ -22,8 +22,7 @@ export class GameLogic {
   constructor(
     private arrowUpdateFunction: UpdateArrowDelegate,
     private arrowResetFunction: () => void,
-    private colorRef: SharedArrowColor,
-    private redraw: ()=>void
+    private colorRef: SharedArrowColor
   ) {
     Events.arrowModeChanged.subscribe(e => {
       this.fromUser = undefined;
@@ -52,15 +51,13 @@ export class GameLogic {
     Events.userMouseOver.subscribe(e => this.state.onMouseOver(e.user));
     Events.userMouseOut.subscribe(e => this.state.onMouseOut(e.user));
     Events.userClicked.subscribe(e => this.state.onClick(e.user));
-    //race condition with gamestate doing the role back, but I guess it works for now... need to fixa
-    Events.gameEvents.undoHappened.subscribe(_ => this.redraw());
     let emptyState: State = new EmptyState();
     let healStart: State = {
       onClick: (user: string) => {
         if (user == this.toUser) {
           //blocks until all subscribers finish so not a race condition
           Events.gameEvents.healed.emit(new HealEvent(this.toUser, UserInputValues.Instance.healAmount ?? 0));
-          this.redraw();
+          Events.reRenderRequested.emit(new ReRenderRequestedEvent());
         }
         this.arrowResetFunction();
         this.toUser = undefined;
@@ -105,7 +102,7 @@ export class GameLogic {
           ));
           UserInputValues.Instance.commanderDamage = undefined;
           this.arrowUpdateFunction(this.toUser, ToOrFrom.to, false);
-          this.redraw();
+          Events.reRenderRequested.emit(new ReRenderRequestedEvent());
         }
 
         this.toUser = undefined;
@@ -146,7 +143,7 @@ export class GameLogic {
         }
         if (this.toUser === user) {
           Events.gameEvents.stoleCommander.emit(new StealCommanderEvent(this.toUser, this.fromUser));
-          this.redraw();
+          Events.reRenderRequested.emit(new ReRenderRequestedEvent());
         }
 
         this.fromUser = undefined;

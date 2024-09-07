@@ -39,6 +39,7 @@ export class CircleClusterComponent {
 
   @Input() public health: number = 40;
   @Input() public commanderDeathCount: number = 0;
+  @Input() public isKillable: boolean = true;
   public color: string = "#777777";
 
   _name: string = "Player1";

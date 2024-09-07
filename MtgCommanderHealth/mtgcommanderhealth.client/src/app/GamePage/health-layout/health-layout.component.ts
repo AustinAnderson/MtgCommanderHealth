@@ -8,6 +8,7 @@ export interface CircleClusterData {
   mainUser: string;
   arrowData: ArrowData;
   mainUserHealth: number;
+  mainUserKillable: true;
   mainCommanderDeathCount: number;
   commanderList: CommanderData[];
   deg: number;
@@ -30,6 +31,8 @@ export interface ArrowData {
 export class HealthLayoutComponent {
   constructor() {
     Events.gameEvents.reset.subscribe(_ => this.Reset());
+    Events.reRenderRequested.subscribe(_ => this.RenderGameState());
+    Events.gameEvents.undoHappened.subscribe(_ => this.RenderGameState());
   }
   public gameState: GameState = new GameState();//actual data
   public userMap: CircleClusterData[] = [];//binding property
@@ -40,8 +43,7 @@ export class HealthLayoutComponent {
   private _logic: GameLogic = new GameLogic(
     this.TryUpdateArrow.bind(this),
     this.ResetArrows.bind(this),
-    this._arrowColor,
-    this.RenderGameState.bind(this)
+    this._arrowColor
   );
 
   public AddUser(name: string) {
@@ -102,11 +104,12 @@ export class HealthLayoutComponent {
       return {
         mainUser: name,
         mainUserHealth: this.gameState.normalDamage[nameNdx],
+        mainUserKillable: this.gameState.killable[nameNdx],
         mainCommanderDeathCount: this.gameState.commanderDeaths[nameNdx],
         deg: angleI * step,
         commanderList: commanderDispData,
         arrowData: this.GetOrCreateArrowData(name)
-      };
+      } as CircleClusterData;
     });
   }
   public ellipseScale(angleDeg: number): number {

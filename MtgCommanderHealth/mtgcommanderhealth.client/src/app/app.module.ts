@@ -14,6 +14,7 @@ import { CommanderDeathTrackerComponent } from './GamePage/commander-death-track
 import { GamePageComponent } from './GamePage/game-page/game-page.component';
 import { FormsModule } from '@angular/forms';
 import { RegisterPageComponent } from './RegisterPage/register-page/register-page.component';
+import { GameLostLockComponent } from './GamePage/game-lost-lock/game-lost-lock.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { RegisterPageComponent } from './RegisterPage/register-page/register-pag
     SoundPlayerComponent,
     EventLogComponent,
     CommanderDeathTrackerComponent,
+    GameLostLockComponent,
     GamePageComponent,
     RegisterPageComponent
   ],

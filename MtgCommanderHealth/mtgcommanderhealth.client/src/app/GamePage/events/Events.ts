@@ -19,6 +19,8 @@ export class StealCommanderEvent {
 }
 export class UndoEvent { }
 export class CommanderDeathCountChangedEvent { constructor(public user: string, public newValue: number) { } }
+export class KillableChangedEvent { constructor(public user: string, public newValue: boolean) { } }
+export class ReRenderRequestedEvent { }
 export class GameEventsInternal {
   public undoHappened: EventEmitter<UndoEvent> = new EventEmitter<UndoEvent>();
   public stoleCommander: EventEmitter<StealCommanderEvent> = new EventEmitter<StealCommanderEvent>();
@@ -33,6 +35,8 @@ export class Events {
   public static arrowModeChanged = new EventEmitter<ArrowModeChangedEvent>();
   public static audioCueQueue = new EventEmitter<AudioCue>();
   public static commanderDeathCountChanged = new EventEmitter<CommanderDeathCountChangedEvent>();
+  public static killableChanged = new EventEmitter<KillableChangedEvent>();
+  public static reRenderRequested = new EventEmitter<ReRenderRequestedEvent>();
   public static gameEvents = new GameEventsInternal();
   private constructor() { }
 }

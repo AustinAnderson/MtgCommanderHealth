@@ -7,4 +7,7 @@
     <!-- Folder where production build objects will be placed -->
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\mtgcommanderhealth.client\</BuildOutputFolder>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="src\app\GamePage\game-lost-lock\" />
+  </ItemGroup>
 </Project>

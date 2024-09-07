@@ -1,7 +1,7 @@
 <style>
-    .reactToMouseDown:active{
-        filter: brightness(50%);
-    }
+  .reactToMouseDown:active{
+    filter: brightness(50%);
+  }
   .toolTipContainer{
     position: relative;
     display: inline-block;
@@ -28,6 +28,14 @@
   .toolTip:hover{
       opacity: 1;
   }
+  .killLock{
+    position: absolute;
+    transform: scale(115%);
+    z-index: 1;
+    left: 40%;
+    top: 68.5%;
+  }
+
 </style>
 
 <div class="container">
@@ -56,6 +64,9 @@
                    
       >
       </health-circle>
+      <div class="killLock">
+        <game-lost-lock [user]="name" [killable]="isKillable"></game-lost-lock>
+      </div>
       <div class="toolTip boxAbove" id="toolTipBox">
         <commander-death-tracker class="deathTracker" [name]="name" [count]="commanderDeathCount"></commander-death-tracker>
       </div>

@@ -1,5 +1,5 @@
 import { AudioCue } from "../events/AudioCue";
-import { Events } from "../events/Events";
+import { Events, ReRenderRequestedEvent } from "../events/Events";
 
 export class Stack<T> {
   public constructor(item: T) {
@@ -37,6 +37,7 @@ export class Data {
   public commanderDamage: HealthAndTracked[][] = [];
   public normalDamage: number[] = [];
   public deathFlags: boolean[] = [];
+  public killable: boolean[] = [];
   public copy() {
     let commanderDamageCopy = [];
     for (let toNdx = 0; toNdx < this.commanderDamage.length; toNdx++) {
@@ -55,6 +56,7 @@ export class Data {
     newData.commanderDamage = commanderDamageCopy;
     newData.normalDamage = [...this.normalDamage];
     newData.deathFlags = [...this.deathFlags];
+    newData.killable = [...this.killable];
     return newData;
   }
 }
@@ -65,6 +67,19 @@ export class GameState {
     Events.gameEvents.healed.subscribe(e => this.Heal(e.user, e.amount));
     Events.gameEvents.stoleCommander.subscribe(e => this.StealCommander(e.victim, e.thief));
     Events.gameEvents.undoHappened.subscribe(_ => this.Undo());
+    Events.killableChanged.subscribe(e => {
+      let index = this._data.head().names.indexOf(e.user);
+      if (index == -1) {
+        console.warn(`unknown player '${e.user}' @GameState.killableChanged.subscribe`);
+        return;
+      }
+      this._data.head().killable[index] = e.newValue;
+      if (e.newValue) {//if killable now, might be dead
+        if (this.UpdateDeaths(index)) {
+          Events.reRenderRequested.emit(new ReRenderRequestedEvent());
+        }
+      }
+    });
     Events.commanderDeathCountChanged.subscribe(e => {
       let index = this._data.head().names.indexOf(e.user);
       if (index == -1) {
@@ -89,6 +104,9 @@ export class GameState {
   public get deathFlags(): readonly boolean[] {
     return this._data.head().deathFlags;
   }
+  public get killable(): readonly boolean[] {
+    return this._data.head().killable;
+  }
   public Undo() {
     this._data.pop();
   }
@@ -96,6 +114,7 @@ export class GameState {
   public AddPlayer(name: string) {
     this._data.head().names.push(name);
     this._data.head().deathFlags.push(false);
+    this._data.head().killable.push(true);
     this._data.head().normalDamage.push(40);
     this._data.head().commanderDeaths.push(0);
     if (this._data.head().commanderDamage.length == 0) {
@@ -116,6 +135,7 @@ export class GameState {
       return;
     }
     this._data.head().deathFlags.splice(index, 1);
+    this._data.head().killable.splice(index, 1);
     this._data.head().commanderDeaths.splice(index, 1);
     this._data.head().names.splice(index, 1);
     for (let i = 0; i < this._data.head().commanderDamage.length; i++) {
@@ -144,22 +164,28 @@ export class GameState {
       throw new Error(`invalid toName '${toName}' for DealDamage`);
     }
     this._data.head().normalDamage[toNdx] -= normal;
-    if (this._data.head().normalDamage[toNdx] <= 0) {
-      Events.audioCueQueue.emit(AudioCue.Died);
-      this._data.head().deathFlags[toNdx] = true;
-    }
     this._data.head().commanderDamage[toNdx][fromNdx].health -= commander;
-    if (this._data.head().commanderDamage[toNdx][fromNdx].health <= 0) {
-      Events.audioCueQueue.emit(AudioCue.Died);
-      this._data.head().deathFlags[toNdx] = true;
+    this.UpdateDeaths(toNdx);
+  }
+  private UpdateDeaths(toNdx: number): boolean {
+    if (this._data.head().normalDamage[toNdx] <= 0) {
+      if (this._data.head().killable[toNdx]) {
+        Events.audioCueQueue.emit(AudioCue.Died);
+        this._data.head().deathFlags[toNdx] = true;
+      }
     }
-    for (let toNdx = 0; toNdx < this.commanderDamage.length; toNdx++) {
-      for (let fromNdx = 0; fromNdx < this.commanderDamage[toNdx].length; fromNdx++) {
-        if (this._data.head().deathFlags[fromNdx]) {
-          this.commanderDamage[toNdx][fromNdx].tracked = false;
+    for (let toNdx = 0; toNdx < this._data.head().commanderDamage.length; toNdx++) {
+      for (let fromNdx = 0; fromNdx < this._data.head().commanderDamage[toNdx].length; fromNdx++) {
+        if (this._data.head().commanderDamage[toNdx][fromNdx].health <= 0) {
+          if (this._data.head().killable[toNdx]) {
+            Events.audioCueQueue.emit(AudioCue.Died);
+            this._data.head().deathFlags[toNdx] = true;
+            this.commanderDamage[toNdx][fromNdx].tracked = false;
+          }
         }
       }
     }
+    return this._data.head().deathFlags[toNdx];
   }
   public StealCommander(victim: string, thief: string) {
     let victimNdx = this._data.head().names.indexOf(victim);
@@ -180,6 +206,9 @@ export class GameState {
     }
     for (let i = 0; i < this._data.head().deathFlags.length; i++) {
       this._data.head().deathFlags[i] = false;
+    }
+    for (let i = 0; i < this._data.head().killable.length; i++) {
+      this._data.head().killable[i] = true;
     }
     for (let i = 0; i < this._data.head().normalDamage.length; i++) {
       this._data.head().normalDamage[i] = 40;
